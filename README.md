@@ -4,6 +4,17 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 First, run the development server:
 
+```api
+http://localhost:3000/api/destinasi/search?q=taman
+
+http://localhost:3000/api/destinasi/p9
+
+http://localhost:3000/api/destinasi/filter?category=nature
+
+http://localhost:3000/api/destinasi/filter?location=jakarta
+```
+
+
 ```bash
 npm run dev
 # or
