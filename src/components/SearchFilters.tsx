@@ -1,12 +1,18 @@
+'use client'
+
 import { useEffect, useState } from "react";
 
-// components/SearchFilters.tsx
 interface SearchFiltersProps {
   onSearch: (query: string) => void;
   onFilter: (filter: { location?: string; category?: string }) => void;
+  currentFilters: {
+    q: string;
+    location: string;
+    category: string;
+  };
 }
 
-export function SearchFilters({ onSearch, onFilter }: SearchFiltersProps) {
+export function SearchFilters({ onSearch, onFilter, currentFilters }: SearchFiltersProps) {
   const [locations, setLocations] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
 
@@ -15,6 +21,7 @@ export function SearchFilters({ onSearch, onFilter }: SearchFiltersProps) {
     const data = await res.json();
     setCategories(data);
   };
+
   const fetchLocations = async () => {
     const res = await fetch(`/api/destinasi/location`);
     const data = await res.json();
@@ -33,10 +40,12 @@ export function SearchFilters({ onSearch, onFilter }: SearchFiltersProps) {
           type="text"
           placeholder="Cari destinasi..."
           className="p-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          value={currentFilters.q}
           onChange={(e) => onSearch(e.target.value)}
         />
         <select
           className="p-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          value={currentFilters.location}
           onChange={(e) => onFilter({ location: e.target.value })}
         >
           <option value="">Semua Lokasi</option>
@@ -48,6 +57,7 @@ export function SearchFilters({ onSearch, onFilter }: SearchFiltersProps) {
         </select>
         <select
           className="p-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          value={currentFilters.category}
           onChange={(e) => onFilter({ category: e.target.value })}
         >
           <option value="">Semua Kategori</option>

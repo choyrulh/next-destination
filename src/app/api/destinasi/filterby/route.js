@@ -1,4 +1,4 @@
-// app/api/destinasi/route.js
+// app/api/destinasi/filterby/route.js
 import { NextResponse } from "next/server";
 import connectMongo from "./../../../../lib/mongo/connect-mongo";
 import Destinasi from "./../../../../(models)/Destinasi";

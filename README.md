@@ -12,6 +12,8 @@ http://localhost:3000/api/destinasi/p9
 http://localhost:3000/api/destinasi/filter?category=nature
 
 http://localhost:3000/api/destinasi/filter?location=jakarta
+
+http://localhost:3000/api/destinasi/filterby?q=gunung&location=jawa&category=nature
 ```
 
 

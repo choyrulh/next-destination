@@ -1,4 +1,4 @@
-// path: /api/destinations/[destinationId]/comments/route.js
+// path: /api/destinasi/[id]/comments/route.js
 
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongo/connect-mongo";
@@ -16,11 +16,11 @@ const handleError = (error) => {
 // GET - Retrieve all comments for a destination
 export async function GET(request, { params }) {
   try {
-    const { destinationId } = params;
+    const { id } = params;
     await connectMongo();
 
     const destination = await Destinasi.findOne(
-      { id: destinationId },
+      { id: id },
       { comments: 1 }
     );
 
@@ -32,7 +32,7 @@ export async function GET(request, { params }) {
     }
 
     return NextResponse.json(
-      { success: true, comments: destination.comments },
+      { success: true, comments: destination.comments || [] },
       { status: 200 }
     );
   } catch (error) {
@@ -43,7 +43,7 @@ export async function GET(request, { params }) {
 // POST - Add a new comment
 export async function POST(request, { params }) {
   try {
-    const { destinationId } = params;
+    const { id } = params;
     const { user, text } = await request.json();
 
     if (!user || !text) {
@@ -55,7 +55,13 @@ export async function POST(request, { params }) {
 
     await connectMongo();
 
-    const destination = await Destinasi.findOne({ id: destinationId });
+    // Menggunakan findOneAndUpdate untuk memastikan field comments ada
+    const destination = await Destinasi.findOneAndUpdate(
+      { id: id },
+      { $setOnInsert: { comments: [] } }, // Memastikan comments ada jika dokumen ditemukan
+      { new: true, upsert: false }
+    );
+
     if (!destination) {
       return NextResponse.json(
         { success: false, message: "Destination not found" },
@@ -69,6 +75,11 @@ export async function POST(request, { params }) {
       createdAt: new Date()
     };
 
+    // Pastikan comments adalah array
+    if (!Array.isArray(destination.comments)) {
+      destination.comments = [];
+    }
+
     destination.comments.push(newComment);
     await destination.save();
 
@@ -76,7 +87,7 @@ export async function POST(request, { params }) {
       { 
         success: true, 
         message: "Comment added successfully",
-        comment: destination.comments[destination.comments.length - 1]
+        comments: destination.comments[destination.comments.length - 1]
       },
       { status: 201 }
     );
@@ -88,7 +99,7 @@ export async function POST(request, { params }) {
 // PATCH - Update a comment
 export async function PATCH(request, { params }) {
   try {
-    const { destinationId } = params;
+    const { id } = params;
     const { commentId, text } = await request.json();
 
     if (!commentId || !text) {
